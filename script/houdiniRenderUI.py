@@ -49,7 +49,6 @@ class HouRender(QWidget):
 
         self.label_hip_file = QLabel('Hip File')
         self.line_hip_file = QLineEdit()
-        self.line_hip_file.setText('/home/mjos/workspace/pycharm/linuxHoudini_renderer/example/untitled.hip')
         self.line_hip_file.setPlaceholderText('Enter HIP File Path')
         self.button_browse_hip = QPushButton('Browse')
         self.path_layout.addWidget(self.label_hip_file)
