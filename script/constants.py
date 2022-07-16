@@ -1,3 +1,4 @@
+"""Application constants are defined here."""
 import logging
 import os.path
 
