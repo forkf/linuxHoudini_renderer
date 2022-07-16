@@ -1,15 +1,19 @@
-try:
-    from PySide2.QtWidgets import *
-    from PySide2.QtGui import *
-    from PySide2.QtCore import *
-except ImportError:
-    from PyQt5.QtWidgets import *
-    from PyQt5.QtGui import *
-    from PyQt5.QtCore import *
+"""This module is utility of pyqt customized dialogs."""
+
+from PySide2.QtWidgets import QFileDialog
+from PySide2.QtCore import QUrl
 
 
 class FileBrowser(QFileDialog):
+    """Main class of file browser window."""
+
     def __init__(self, parent=None, caption=""):
+        """Initialize file-browser window.
+
+        Args:
+            parent (obj): Parent object.
+            caption (str): File Browser window title.
+        """
         super(FileBrowser, self).__init__(parent)
         self.setGeometry(10, 10, 700, 400)
         _dir = '/opt/'
