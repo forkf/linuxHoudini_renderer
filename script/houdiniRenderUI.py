@@ -1,26 +1,26 @@
+"""This is main script file which set ups UI for houdini rendering.
 # Author: Mehul Joshi
 # Project: Linux Houdini Renderer
 # Description : It's an application which render your hip file without opening Houdini UI.
-import json
-
-try:
-    from PySide2.QtWidgets import *
-    from PySide2.QtGui import *
-    from PySide2.QtCore import *
-except ImportError:
-    from PyQt5.QtWidgets import *
-    from PyQt5.QtGui import *
-    from PyQt5.QtCore import *
+"""
 
 import os
 import sys
 
-import utility
-from constants import LOGGER, CFG_FILE
+from PySide2.QtWidgets import (QApplication, QComboBox, QFileDialog, QHBoxLayout,
+                               QLabel, QLineEdit, QListWidget, QMessageBox, QPushButton,
+                               QVBoxLayout, QWidget)
+from PySide2.QtCore import QProcess
+
+from script import utility
+from script.constants import LOGGER
 
 
 class HouRender(QWidget):
+    """Setup main-ui for houdini rendering."""
+
     def __init__(self, parent=None):
+        """Initialize UI"""
         super(HouRender, self).__init__(parent)
         self.setGeometry(10, 10, 700, 400)
         self.setWindowTitle("Offline Houdini Render")
@@ -34,8 +34,8 @@ class HouRender(QWidget):
         # Adding Layouts in UI Layout
         self.config_layout = QHBoxLayout()
         self.layout.addLayout(self.config_layout)
-        self.pathLayout = QHBoxLayout()
-        self.layout.addLayout(self.pathLayout)
+        self.path_layout = QHBoxLayout()
+        self.layout.addLayout(self.path_layout)
         self.node_layout = QHBoxLayout()
         self.layout.addLayout(self.node_layout)
 
@@ -52,12 +52,12 @@ class HouRender(QWidget):
         self.line_hip_file.setText('/home/mjos/workspace/pycharm/linuxHoudini_renderer/example/untitled.hip')
         self.line_hip_file.setPlaceholderText('Enter HIP File Path')
         self.button_browse_hip = QPushButton('Browse')
-        self.pathLayout.addWidget(self.label_hip_file)
-        self.pathLayout.addWidget(self.line_hip_file)
-        self.pathLayout.addWidget(self.button_browse_hip)
+        self.path_layout.addWidget(self.label_hip_file)
+        self.path_layout.addWidget(self.line_hip_file)
+        self.path_layout.addWidget(self.button_browse_hip)
 
         self.button_analyse = QPushButton('Analyse')
-        self.pathLayout.addWidget(self.button_analyse)
+        self.path_layout.addWidget(self.button_analyse)
 
         self.label_node = QLabel('Nodes Type')
         self.label_node.setMaximumWidth(80)
@@ -82,12 +82,14 @@ class HouRender(QWidget):
         self.connect_hou_render()
 
     def connect_hou_render(self):
+        """Setup button connections of UI."""
         self.config_button.clicked.connect(self.re_locate_houdini)
         self.button_browse_hip.clicked.connect(self.browse_file)
         self.button_analyse.clicked.connect(self.run_go)
         self.button_start.clicked.connect(self.run_start)
 
     def re_locate_houdini(self):
+        """Setup application configuration by picking houdini installed directory.        """
         LOGGER.debug('Opening fileBrowser to pick houdini install dir.')
         while True:
             get_directory = utility.pick_houdini_directory()
@@ -95,7 +97,7 @@ class HouRender(QWidget):
                 self.houdini_batch_location = get_directory.get("hbatch_location")
                 self.hou_location = get_directory.get("hou_location")
 
-                LOGGER.debug('hbatch found : {}'.format(self.houdini_batch_location))
+                LOGGER.debug('hbatch found : %s', self.houdini_batch_location)
                 self._enable_widgets(switch=True)
                 self.hou_location = get_directory.get("houdini_installed_directory")
                 self.config_line.setText(self.hou_location)
@@ -104,6 +106,7 @@ class HouRender(QWidget):
                 continue
 
     def _initial_checks(self):
+        """Perform initials check of UI."""
         LOGGER.debug('Performing initial checks ...')
         checks = utility.check_configs()
         self.hou_location = checks.get("houdini_installed_directory")
@@ -117,6 +120,11 @@ class HouRender(QWidget):
         self.config_line.setText(self.hou_location)
 
     def _enable_widgets(self, switch):
+        """Enable or Disable UI widgets.
+
+        Args:
+            switch (bool): Whether widgets need to be enabled/disabled.
+        """
         self.label_hip_file.setEnabled(switch)
         self.button_browse_hip.setEnabled(switch)
         self.button_analyse.setEnabled(switch)
@@ -128,20 +136,31 @@ class HouRender(QWidget):
         self.config_line.setDisabled(switch)
 
     def browse_file(self):
+        """Open browser and pick houdini file."""
         _dir = os.getenv('HOME')
-        get_file = QFileDialog.getOpenFileNames(self, 'Select .hip File', _dir, filter='Houdini File(*.hip)')
+        get_file = QFileDialog.getOpenFileNames(
+            self,
+            'Select .hip File',
+            _dir,
+            filter='Houdini File(*.hip)'
+        )
         self.line_hip_file.setText(str(get_file[0][0]))
         self.line_hip_file.setReadOnly(True)
         self.list_info.clear()
         self.combo_node.clear()
 
     def run_go(self):
+        """Read houdini hip file and fetch mantra nodes."""
         try:
             sys.path.insert(0, self.hou_location)
             import hou
             hip_path = str(self.line_hip_file.text())
             if hip_path == '':
-                QMessageBox.information(self, 'Information', 'Please enter hip file path.')
+                QMessageBox.information(
+                    self,
+                    'Information',
+                    'Please enter hip file path.'
+                )
             else:
                 hou.hipFile.load(hip_path, ignore_load_warnings=True)
                 node = hou.node('/')
@@ -152,11 +171,17 @@ class HouRender(QWidget):
                         node_path = each.path()
                         f_start = hou.node(each.path()).parm('f1').eval()
                         f_end = hou.node(each.path()).parm('f2').eval()
-                        self.out_nodes[i] = {'NodePath': '', 'sFrame': '', 'eFrame': '', 'out_path': ''}
+                        self.out_nodes[i] = {
+                            'NodePath': '',
+                            'sFrame': '',
+                            'eFrame': '',
+                            'out_path': ''
+                        }
+                        eval_out_path = hou.node(each.path()).parm('vm_picture').eval()
                         self.out_nodes[i]['NodePath'] = node_path
                         self.out_nodes[i]['sFrame'] = f_start
                         self.out_nodes[i]['eFrame'] = f_end
-                        self.out_nodes[i]['out_path'] = hou.node(each.path()).parm('vm_picture').eval()
+                        self.out_nodes[i]['out_path'] = eval_out_path
                         i = i+1
 
                 sorted(self.out_nodes)
@@ -167,6 +192,7 @@ class HouRender(QWidget):
             QMessageBox.critical(self, 'Critical', msg)
 
     def run_start(self):
+        """Perform rendering of file."""
         if self.combo_node.currentText() == '':
             QMessageBox.information(self, 'Information', 'Out node selection is empty.')
         else:
@@ -187,11 +213,13 @@ class HouRender(QWidget):
             self.out_process.readyReadStandardError.connect(self.handle_std_err)
 
     def handle_std_out(self):
+        """Handle stand-out prints."""
         data = self.out_process.readAllStandardOutput().data()
         self.list_info.addItem(data.decode('utf-8'))
         self.list_info.scrollToBottom()
 
     def handle_std_err(self):
+        """Handle stand-out errors."""
         data = self.out_process.readAllStandardError().data()
         self.list_info.addItem(data.decode('utf-8'))
         self.list_info.scrollToBottom()
@@ -199,7 +227,7 @@ class HouRender(QWidget):
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    win = HouRender()
-    win.show()
-    app.exec_()
+    APP = QApplication(sys.argv)
+    WIN = HouRender()
+    WIN.show()
+    APP.exec_()
