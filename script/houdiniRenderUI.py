@@ -111,7 +111,6 @@ class HouRender(QWidget):
         if self.hou_location:
             self.houdini_batch_location = checks.get('hbatch_location')
             self.hou_location = checks.get("hou_location")
-            print("test", self.hou_location)
             self._enable_widgets(switch=True)
         else:
             self.re_locate_houdini()
@@ -161,7 +160,6 @@ class HouRender(QWidget):
                         i = i+1
 
                 sorted(self.out_nodes)
-                print self.out_nodes
                 for each in self.out_nodes:
                     self.combo_node.addItem(self.out_nodes[each]['NodePath'])
 
