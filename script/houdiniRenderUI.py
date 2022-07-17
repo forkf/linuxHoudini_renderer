@@ -74,6 +74,7 @@ class HouRender(QWidget):
         self.out_nodes = {}
         self.houdini_batch_location = None
         self.hou_location = None
+        self.houdini_install_dir = None
         self.render_path = None
         self._initial_checks()
 
@@ -98,8 +99,8 @@ class HouRender(QWidget):
 
                 LOGGER.debug('hbatch found : %s', self.houdini_batch_location)
                 self._enable_widgets(switch=True)
-                self.hou_location = get_directory.get("houdini_installed_directory")
-                self.config_line.setText(self.hou_location)
+                self.houdini_install_dir = get_directory.get("houdini_installed_directory")
+                self.config_line.setText(self.houdini_install_dir)
                 break
             else:
                 continue
@@ -113,10 +114,11 @@ class HouRender(QWidget):
         if self.hou_location:
             self.houdini_batch_location = checks.get('hbatch_location')
             self.hou_location = checks.get("hou_location")
+            self.houdini_install_dir = checks.get("houdini_installed_directory")
             self._enable_widgets(switch=True)
         else:
             self.re_locate_houdini()
-        self.config_line.setText(self.hou_location)
+        self.config_line.setText(self.houdini_install_dir)
 
     def _enable_widgets(self, switch):
         """Enable or Disable UI widgets.
