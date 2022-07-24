@@ -2,8 +2,8 @@
 
 import json
 import os
-from script.constants import LOGGER, CFG_DIR, CFG_FILE, HBATCH_LOCATION
-from script.ui_utils import FileBrowser
+from src.linuxHoudini_renderer.constants import LOGGER, CFG_DIR, CFG_FILE, HBATCH_LOCATION
+from src.linuxHoudini_renderer.ui_utils import FileBrowser
 
 
 def get_config_data():

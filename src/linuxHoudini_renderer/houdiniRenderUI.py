@@ -12,8 +12,8 @@ from PySide2.QtWidgets import (QApplication, QComboBox, QFileDialog, QHBoxLayout
                                QVBoxLayout, QWidget)
 from PySide2.QtCore import QProcess
 
-from script import utility
-from script.constants import LOGGER
+from src.linuxHoudini_renderer import utility
+from src.linuxHoudini_renderer.constants import LOGGER
 
 
 class HouRender(QWidget):

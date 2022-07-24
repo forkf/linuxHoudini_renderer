@@ -13,7 +13,7 @@ develop-eggs/
 dist/
 downloads/
 eggs/
-example/render
+src/linuxHoudini_renderer/example/render
 .eggs/
 .idea/
 lib/
