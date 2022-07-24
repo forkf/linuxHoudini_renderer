@@ -14,6 +14,7 @@ HBATCH_LOCATION = "{}/bin/hbatch"
 
 _PATH = os.path.dirname
 _JOIN = os.path.join
-APP_DIR = _PATH(_PATH(__file__))
+APP_DIR = _PATH(__file__)
 CFG_DIR = _JOIN(APP_DIR, ".config")
+print(CFG_DIR)
 CFG_FILE = _JOIN(CFG_DIR, 'app_config.json')
